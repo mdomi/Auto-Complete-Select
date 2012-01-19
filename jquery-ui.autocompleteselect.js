@@ -46,12 +46,9 @@
 				}
 			}).on({
 				focus: function() {
-					console.log(this);
 					$(this).val('').autocomplete('search');
 				}
 			}).appendTo(this.element.parent());
-			
-			console.log(this.element.parent());
 		}
 	});
 })(jQuery);
