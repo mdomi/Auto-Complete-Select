@@ -18,7 +18,8 @@
 	$.widget('select.autocompleteselect', {
 		options : {
 			delay: 0,
-			minLength: 0
+			minLength: 0,
+			change: function(event, item) {}
 		},
 		_create : function () {
 			var self = this;
@@ -29,6 +30,8 @@
 					value : $option.attr('value')
 				};
 			});
+			this._lastValue = '';
+			this._selectedItem = {};
 			this.element.hide();
 			this.textInput = $('<input type="text" />').autocomplete({
 				delay: this.options.delay,
@@ -40,15 +43,37 @@
 					return false;
 				},
 				select: function(event, ui) {
+					self._selecting = false;
+					self._lastValue = ui.item.label;
+					self._selectedItem = ui.item;
 					// TODO: add the value correctly
-					self.textInput.val(ui.item.label).blur();
+					self.textInput.val(ui.item.label).trigger('blur');
 					return false;
 				}
 			}).on({
 				focus: function() {
-					$(this).val('').autocomplete('search');
+					self._selecting = true;
+					var $this = $(this);
+					self._lastValue = self.textInput.val();
+					self.textInput.val('').autocomplete('search');
+				},
+				blur: function() {
+					if(self._selecting) {
+						self.textInput.val('');
+					} else {
+						self.textInput.trigger('change');
+					}
+				},
+				change: function(event) {
+					if($.isFunction(self.options.change)) {
+						self.options.change.apply(self.element, [event, self._selectedItem]);
+					}
 				}
 			}).appendTo(this.element.parent());
+		},
+		_destroy: function() {
+			this.textInput.remove();
+			this.element.show();
 		}
 	});
 })(jQuery);

@@ -18,7 +18,15 @@
 	<body>
 		<script type="text/javascript">
 			$(function(){
-				$('#select_state').autocompleteselect();
+				$('#select_state').autocompleteselect({
+					change: function(event, value) {
+						var element = $('<span style="font-weight: bold;"></span>').appendTo(document.body).wrap('<div style="cursor: pointer;"><p>You picked: </p></div>')
+						element.text(value.label);
+						element.closest('div').click(function() {
+							$(this).remove();
+						})
+					}
+				});
 			});
 		</script>
 		<div>
