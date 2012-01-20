@@ -19,11 +19,12 @@
 			delay: 0,
 			minLength: 0,
 			attrPrefix: 'autocomplete_'
-		}, // 27:29
+		},
 		_create : function () {
 			var self = this;
 			var selectedItem = {label: '', value: ''};
 			var changed = false;
+			
 			var optionValues = this.element.find('option').map(function () {
 				var $option = $(this);
 				var optionObject = {
@@ -35,7 +36,9 @@
 				}
 				return optionObject;
 			});
+			
 			this.element.hide();
+			
 			this.textInput = $('<input type="text" />').val(selectedItem.label).autocomplete({
 				delay: this.options.delay,
 				minLength: this.options.minLength,
@@ -72,7 +75,8 @@
 				change: function(event) {
 					self.element.change();
 				}
-			}).appendTo(this.element.parent())
+			}).appendTo(this.element.parent());
+			
 			this.textInput.attr('name', this.options.attrPrefix + this.element.attr('name'));
 			this.textInput.attr('id', this.options.attrPrefix + this.element.attr('id'));
 		},
