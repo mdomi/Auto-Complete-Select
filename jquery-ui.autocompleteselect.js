@@ -22,7 +22,7 @@
 		}, // 27:29
 		_create : function () {
 			var self = this;
-			this._selectedItem = {label: '', value: ''};
+			var selectedItem = {label: '', value: ''};
 			this._changed = false;
 			this._optionValues = this.element.find('option').map(function () {
 				var $option = $(this);
@@ -31,26 +31,28 @@
 					value : $option.attr('value')
 				};
 				if($option.is(':selected')) {
-					self._selectedItem = optionObject
+					selectedItem = optionObject
 				}
 				return optionObject;
 			});
 			this.element.hide();
-			this.textInput = $('<input type="text" />').val(this._selectedItem.label).autocomplete({
+			this.textInput = $('<input type="text" />').val(selectedItem.label).autocomplete({
 				delay: this.options.delay,
 				minLength: this.options.minLength,
 				source : function (request, response) {
 					response($.ui.autocomplete.filter(self._optionValues, request.term));
 				},
 				select: function(event, ui) {
-					if(ui.item.value != self._selectedItem.value) {
+					if(ui.item.value != selectedItem.value) {
 						self._changed = true;
 					}
-					self._selectedItem = ui.item;
+					selectedItem = ui.item;
 				},
 				close: function(event, ui) {
 					self._selecting = false;
-					self.textInput.val(self._selectedItem.label).trigger('blur');
+					self.textInput.val(selectedItem.label);
+					self.element.val(selectedItem.value);
+					self.textInput.trigger('blur');
 				}
 			}).on({
 				focus: function() {
@@ -68,7 +70,7 @@
 				},
 				// TODO: simplify change, not 100% consistent yet
 				change: function(event) {
-					self.element.val(self._selectedItem.value).change();
+					self.element.change();
 				}
 			}).appendTo(this.element.parent())
 			this.textInput.attr('name', this.options.attrPrefix + this.element.attr('name'));
