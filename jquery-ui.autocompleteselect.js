@@ -52,14 +52,12 @@
 					selectedItem = ui.item;
 				},
 				close: function(event, ui) {
-					self._selecting = false;
 					self.textInput.val(selectedItem.label);
 					self.element.val(selectedItem.value);
 					self.textInput.trigger('blur');
 				}
 			}).on({
 				focus: function() {
-					self._selecting = true;
 					self.textInput.val('').autocomplete('search');
 				},
 				blur: function(event) {
