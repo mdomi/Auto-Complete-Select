@@ -17,7 +17,8 @@
 	$.widget('select.autocompleteselect', {
 		options : {
 			delay: 0,
-			minLength: 0
+			minLength: 0,
+			attrPrefix: 'autocomplete_'
 		}, // 27:29
 		_create : function () {
 			var self = this;
@@ -69,7 +70,9 @@
 				change: function(event) {
 					self.element.val(self._selectedItem.value).change();
 				}
-			}).appendTo(this.element.parent());
+			}).appendTo(this.element.parent())
+			this.textInput.attr('name', this.options.attrPrefix + this.element.attr('name'));
+			this.textInput.attr('id', this.options.attrPrefix + this.element.attr('id'));
 		},
 		_destroy: function() {
 			this.textInput.remove();
