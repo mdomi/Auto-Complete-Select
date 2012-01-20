@@ -24,7 +24,7 @@
 			var self = this;
 			var selectedItem = {label: '', value: ''};
 			var changed = false;
-			this._optionValues = this.element.find('option').map(function () {
+			var optionValues = this.element.find('option').map(function () {
 				var $option = $(this);
 				var optionObject = {
 					label : $option.text(),
@@ -40,7 +40,7 @@
 				delay: this.options.delay,
 				minLength: this.options.minLength,
 				source : function (request, response) {
-					response($.ui.autocomplete.filter(self._optionValues, request.term));
+					response($.ui.autocomplete.filter(optionValues, request.term));
 				},
 				select: function(event, ui) {
 					if(ui.item.value != selectedItem.value) {
