@@ -18,20 +18,27 @@
 	<body>
 		<script type="text/javascript">
 			$(function(){
-				$('#select_state').autocompleteselect({
-					change: function(event, value) {
-						var element = $('<span style="font-weight: bold;"></span>').appendTo(document.body).wrap('<div style="cursor: pointer;"><p>You picked: </p></div>')
-						element.text(value.label);
-						element.closest('div').click(function() {
-							$(this).remove();
-						})
-					}
+				$('#select_state').autocompleteselect().change(function(event) {
+					var element = $('<span style="font-weight: bold;"></span>').appendTo(document.body).wrap('<div style="cursor: pointer;"><p>Value changed to: </p></div>')
+					var selectedElement = $('option:selected', this);
+					element.text(selectedElement.val() + ' / ' + selectedElement.text());
+					element.closest('div').click(function() {
+						$(this).remove();
+					});
+				}).blur(function(event) {
+					var element = $('<span style="font-weight: bold;"></span>').appendTo(document.body).wrap('<div style="cursor: pointer;"><p>Value blurred to: </p></div>')
+					var selectedElement = $('option:selected', this);
+					element.text(selectedElement.val() + ' / ' + selectedElement.text());
+					element.closest('div').click(function() {
+						$(this).remove();
+					});
 				});
 			});
 		</script>
 		<div>
 			<label for="select_state">Select a U.S. state name:</label>
 			<select id="select_state" name="select_state">
+				<option value="">[None]</option>
 				<option value="Alabama">Alabama</option>
                 <option value="Alaska">Alaska</option>
                 <option value="Arizona">Arizona</option>

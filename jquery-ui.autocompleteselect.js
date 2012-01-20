@@ -14,59 +14,60 @@
  * limitations under the License.
  */
 (function ($) {
-	'use strict';
 	$.widget('select.autocompleteselect', {
 		options : {
 			delay: 0,
-			minLength: 0,
-			change: function(event, item) {}
-		},
+			minLength: 0
+		}, // 27:29
 		_create : function () {
 			var self = this;
-			this.optionValues = this.element.find('option').map(function () {
+			this._selectedItem = {label: '', value: ''};
+			this._changed = false;
+			this._optionValues = this.element.find('option').map(function () {
 				var $option = $(this);
-				return {
+				var optionObject = {
 					label : $option.text(),
 					value : $option.attr('value')
 				};
+				if($option.is(':selected')) {
+					self._selectedItem = optionObject
+				}
+				return optionObject;
 			});
-			this._lastValue = '';
-			this._selectedItem = {};
 			this.element.hide();
-			this.textInput = $('<input type="text" />').autocomplete({
+			this.textInput = $('<input type="text" />').val(this._selectedItem.label).autocomplete({
 				delay: this.options.delay,
 				minLength: this.options.minLength,
 				source : function (request, response) {
-					response($.ui.autocomplete.filter(self.optionValues, request.term));
-				},
-				change: function(event, ui) {
-					return false;
+					response($.ui.autocomplete.filter(self._optionValues, request.term));
 				},
 				select: function(event, ui) {
-					self._selecting = false;
-					self._lastValue = ui.item.label;
+					if(ui.item.value != self._selectedItem.value) {
+						self._changed = true;
+					}
 					self._selectedItem = ui.item;
-					self.textInput.val(ui.item.label).trigger('blur');
-					return false;
+				},
+				close: function(event, ui) {
+					self._selecting = false;
+					self.textInput.val(self._selectedItem.label).trigger('blur');
 				}
 			}).on({
 				focus: function() {
 					self._selecting = true;
-					var $this = $(this);
-					self._lastValue = self.textInput.val();
 					self.textInput.val('').autocomplete('search');
 				},
-				blur: function() {
-					if(self._selecting) {
-						self.textInput.val('');
-					} else {
+				blur: function(event) {
+					if(event.isTrigger) {
+						self.element.trigger('blur');
+					}
+					if(self._changed) {
+						self._changed = false;
 						self.textInput.trigger('change');
 					}
 				},
+				// TODO: simplify change, not 100% consistent yet
 				change: function(event) {
-					if($.isFunction(self.options.change)) {
-						self.options.change.apply(self.element, [event, self._selectedItem]);
-					}
+					self.element.val(self._selectedItem.value).change();
 				}
 			}).appendTo(this.element.parent());
 		},
