@@ -23,7 +23,7 @@
 		_create : function () {
 			var self = this;
 			var selectedItem = {label: '', value: ''};
-			this._changed = false;
+			var changed = false;
 			this._optionValues = this.element.find('option').map(function () {
 				var $option = $(this);
 				var optionObject = {
@@ -44,7 +44,7 @@
 				},
 				select: function(event, ui) {
 					if(ui.item.value != selectedItem.value) {
-						self._changed = true;
+						changed = true;
 					}
 					selectedItem = ui.item;
 				},
@@ -63,8 +63,8 @@
 					if(event.isTrigger) {
 						self.element.trigger('blur');
 					}
-					if(self._changed) {
-						self._changed = false;
+					if(changed) {
+						changed = false;
 						self.textInput.trigger('change');
 					}
 				},
