@@ -46,7 +46,6 @@
 					self._selecting = false;
 					self._lastValue = ui.item.label;
 					self._selectedItem = ui.item;
-					// TODO: add the value correctly
 					self.textInput.val(ui.item.label).trigger('blur');
 					return false;
 				}
