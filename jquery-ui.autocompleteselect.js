@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 (function ($) {
+
+	var KEY_CODE_ENTER = 13;
+	
 	$.widget('select.autocompleteselect', {
 		options : {
 			delay: 0,
@@ -24,6 +27,7 @@
 			var self = this;
 			var selectedItem = {label: '', value: ''};
 			var changed = false;
+			var selected = false;
 			
 			var optionValues = this.element.find('option').map(function () {
 				var $option = $(this);
@@ -39,6 +43,23 @@
 			
 			this.element.hide();
 			
+			function setSelectedValue(selectedValue) {
+				if(selectedValue.value != selectedItem.value) {
+					changed = true;
+				}
+				selectedItem = selectedValue;
+				selected = true;
+			}
+			
+			function autocompleteclose() {
+				if(selected) {
+					self.textInput.val(selectedItem.label);
+					self.element.val(selectedItem.value);
+					self.textInput.trigger('blur');
+					selected = false;
+				}
+			} 
+			
 			this.textInput = $('<input type="text" />').val(selectedItem.label).autocomplete({
 				delay: this.options.delay,
 				minLength: this.options.minLength,
@@ -46,18 +67,27 @@
 					response($.ui.autocomplete.filter(optionValues, request.term));
 				},
 				select: function(event, ui) {
-					if(ui.item.value != selectedItem.value) {
-						changed = true;
-					}
-					selectedItem = ui.item;
+					setSelectedValue(ui.item);
 				},
-				close: function(event, ui) {
-					self.textInput.val(selectedItem.label);
-					self.element.val(selectedItem.value);
-					self.textInput.trigger('blur');
-				}
+				close: autocompleteclose
 			}).on({
-				focus: function() {
+				keypress: function(event) {
+					if(event.keyCode === KEY_CODE_ENTER) {
+						var validSelection = false;
+						$.each(optionValues, function(i, optionValue) {
+							if(optionValue.label.toLowerCase() === self.textInput.val().toLowerCase()) {
+								validSelection = true;
+								setSelectedValue(optionValue);
+								
+							}
+						});
+						if(validSelection) {
+							autocompleteclose();
+						}
+						return false;
+					}
+				},
+				focus: function(event) {
 					self.textInput.val('').autocomplete('search');
 				},
 				blur: function(event) {
@@ -67,11 +97,14 @@
 					if(changed) {
 						changed = false;
 						self.textInput.trigger('change');
+					} else {
+						self.textInput.val(selectedItem.label);
 					}
 				},
-				// TODO: simplify change, not 100% consistent yet
 				change: function(event) {
-					self.element.change();
+					if(event.isTrigger) {
+						self.element.trigger('change');
+					}
 				}
 			}).appendTo(this.element.parent());
 			
