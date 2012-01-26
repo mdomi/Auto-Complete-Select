@@ -55,9 +55,9 @@
 				if(selected) {
 					self.textInput.val(selectedItem.label);
 					self.element.val(selectedItem.value);
-					self.textInput.trigger('blur');
 					selected = false;
 				}
+				self.textInput.trigger('blur');
 			} 
 			
 			this.textInput = $('<input type="text" />').val(selectedItem.label).autocomplete({
@@ -79,7 +79,6 @@
 							if(optionValue.label.toLowerCase() === self.textInput.val().toLowerCase()) {
 								validSelection = true;
 								setSelectedValue(optionValue);
-								
 							}
 						});
 						if(validSelection) {
