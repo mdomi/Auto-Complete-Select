@@ -69,7 +69,8 @@
 				select: function(event, ui) {
 					setSelectedValue(ui.item);
 				},
-				close: autocompleteclose
+				close: autocompleteclose,
+				appendTo: self.element.parent()
 			}).on({
 				keypress: function(event) {
 					if(event.keyCode === KEY_CODE_ENTER) {
